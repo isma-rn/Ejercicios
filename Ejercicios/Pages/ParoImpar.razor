@@ -1,0 +1,62 @@
+﻿@page "/Paroimpar"
+@inject IJSRuntime _JSRuntime
+
+<div class="container">
+  <h2>Par o Impar</h2>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        Ingrese el número a calcular:
+    </div>
+    <div class="panel-body">
+        <div class="col-md-6">
+           <input id="ie1_numero" type="text" min="0" style="min-width:100%" maxlength="9" @bind="@currentNumber" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
+           <span id="se1_numParImpar" class="alert-danger"></span>
+       </div>    
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" @onclick="ProcesarNumero">Calcular</button>
+    </div>
+  </div>
+</div>
+
+@code {
+    private string currentNumber = "";
+
+    private async Task ProcesarNumero()
+    {
+        var esEntero = await ValidarEntradaDato();
+
+        if(esEntero)
+        {
+            var resultado = Int32.Parse(currentNumber);
+            if (EsPar(resultado))
+            {
+                await _JSRuntime.InvokeVoidAsync("MostrarAlerta", "Es Par");
+            }
+            else
+            {
+                await _JSRuntime.InvokeVoidAsync("MostrarAlerta", "Es Impar");
+            }
+        }
+        else
+        {
+            await _JSRuntime.InvokeVoidAsync("MostrarAlerta", "Error, Dato capturado no es válido");
+        }
+    }
+
+    private async Task<bool> ValidarEntradaDato()
+    {
+        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "ie1_numero", "se1_numParImpar");
+
+        return confirmacion;
+    }
+
+    private static bool EsPar(int numero)
+    {
+        if (numero % 2 == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+}
