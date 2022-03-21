@@ -1,0 +1,78 @@
+﻿@page "/TablaMultiplicar"
+@inject IJSRuntime _JSRuntime
+
+<div class="row">
+    <div class="col-sm-6">
+      <h2>Tabla de Multiplicar (0 al 20)</h2>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+            Ingrese el número a calcular:
+        </div>
+        <div class="panel-body">
+            <input id="ie2_numero" type="text" min="0" style="min-width:100%" maxlength="9" @bind="@currentNumber" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
+            <div>
+               <span id="se2_numParImpar" class="alert-danger"></span>
+           </div>    
+        </div>
+        <div class="panel-footer">
+            <button class="btn btn-primary" @onclick="ProcesarNumero">Calcular</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6" style="height: 450px; overflow: auto;">
+        <table class="table">
+            <tr align="center">
+                <th>Operación</th>
+                <th></th>
+                <th>Resultado</th>
+            </tr>
+            @if (Int32.TryParse(currentNumber, out int numAux))
+            {
+                
+                for(int i = 0; i <=20; i++)
+                {
+                    <tr align="center">
+                        <td>@string.Format($"{currentNumber} x {i}")</td>
+                        <td>=</td>
+                        <td>@string.Format($"{(numAux * i)}")</td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td></td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+
+
+@code {
+    private string currentNumber = "";
+
+    private async Task ProcesarNumero()
+    {
+        var esEntero = await ValidarEntradaDato();
+
+        if(!esEntero)
+        {
+            await _JSRuntime.InvokeVoidAsync("MostrarAlerta", "Error, Dato capturado no es válido");
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task<bool> ValidarEntradaDato()
+    {
+        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "ie2_numero", "se2_numParImpar");
+
+        return confirmacion;
+    }
+
+}
