@@ -9,8 +9,8 @@
     </div>
     <div class="panel-body">
         <div class="col-md-6">
-           <input id="ie1_numero" type="text" min="0" style="min-width:100%" maxlength="9" @bind="@currentNumber" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
-           <span id="se1_numParImpar" class="alert-danger"></span>
+           <input id="i_numero" type="text" min="0" style="min-width:100%" maxlength="9" @bind="@currentNumber" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
+           <span id="s_numero" class="alert-danger"></span>
        </div>    
     </div>
     <div class="panel-footer">
@@ -46,7 +46,7 @@
 
     private async Task<bool> ValidarEntradaDato()
     {
-        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "ie1_numero", "se1_numParImpar");
+        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "i_numero", "s_numero");
 
         return confirmacion;
     }

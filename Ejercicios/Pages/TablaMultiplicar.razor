@@ -9,9 +9,9 @@
             Ingrese el número a calcular:
         </div>
         <div class="panel-body">
-            <input id="ie2_numero" type="text" min="0" style="min-width:100%" maxlength="9" @bind="@currentNumber" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
+            <input id="i_numero" type="text" min="0" style="min-width:100%" maxlength="9" @bind="@txtCaptura" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
             <div>
-               <span id="se2_numParImpar" class="alert-danger"></span>
+               <span id="s_numero" class="alert-danger"></span>
            </div>    
         </div>
         <div class="panel-footer">
@@ -27,13 +27,13 @@
                 <th></th>
                 <th>Resultado</th>
             </tr>
-            @if (Int32.TryParse(currentNumber, out int numAux))
+            @if (Int32.TryParse(txtCaptura, out int numAux))
             {
                 
                 for(int i = 0; i <=20; i++)
                 {
                     <tr align="center">
-                        <td>@string.Format($"{currentNumber} x {i}")</td>
+                        <td>@string.Format($"{txtCaptura} x {i}")</td>
                         <td>=</td>
                         <td>@string.Format($"{(numAux * i)}")</td>
                     </tr>
@@ -54,7 +54,7 @@
 
 
 @code {
-    private string currentNumber = "";
+    private string txtCaptura = "";
 
     private async Task ProcesarNumero()
     {
@@ -70,7 +70,7 @@
 
     private async Task<bool> ValidarEntradaDato()
     {
-        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "ie2_numero", "se2_numParImpar");
+        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "i_numero", "s_numero");
 
         return confirmacion;
     }
