@@ -1,0 +1,76 @@
+﻿@page "/Fibonacci"
+@using System.Numerics
+@inject IJSRuntime _JSRuntime
+
+<div class="container">
+  <h2>Serie de Fibonacci</h2>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        Ingrese el número a calcular:
+    </div>
+    <div class="panel-body">
+        <div class="col-md-6">
+           <input id="i_numero" type="text" min="0" style="min-width:100%" maxlength="4" @bind="@txtCaptura" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
+           <span id="s_numero" class="alert-danger"></span>
+       </div>    
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" @onclick="ProcesarNumero">Calcular</button>
+    </div>
+  </div>
+</div>
+
+<h3>Resultado:</h3>
+<div class="alert-info" style="max-width:650px; height: auto; word-wrap:break-word;">
+    @txtResultado
+</div>
+
+@code {
+    private string txtCaptura = "", txtResultado = "";
+
+    private async Task ProcesarNumero()
+    {
+        var esEntero = await ValidarEntradaDato();
+
+        if(esEntero)
+        {
+            txtResultado = "Calculando...";
+            var valor = Int32.Parse(txtCaptura);
+            txtResultado = $"{CalcularNFibonacci(valor)}";
+        }
+        else
+        {
+            await _JSRuntime.InvokeVoidAsync("MostrarAlerta", "Error, Dato capturado no es válido");
+        }
+    }
+
+    private async Task<bool> ValidarEntradaDato()
+    {
+        var confirmacion = await _JSRuntime.InvokeAsync<bool>("validaEntero", "i_numero", "s_numero");
+
+        return confirmacion;
+    }
+
+    private int CalcularNFibonacci(int n)
+    {            
+        if (n > 1)
+        {
+            int fn = 0, f1 = 1, auxiliar = 0;
+            for (int i = 1; i <= n; i++)
+            {
+                auxiliar = f1 + fn;
+                fn = f1;
+                f1 = auxiliar;
+            }
+            return fn;
+        }            
+        return n;
+    }
+
+    //private int CalcularNFibonacciRecursivo(int n)
+    //{
+    //    if (n > 1)
+    //        return CalcularNFibonacci(n-1) + CalcularNFibonacci(n-2);
+    //    return n;
+    //}
+}
