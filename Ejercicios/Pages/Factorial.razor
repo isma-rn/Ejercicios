@@ -1,29 +1,32 @@
 ﻿@page "/Factorial"
 @using System.Numerics
+@using Ejercicios.Shared
 @inject IJSRuntime _JSRuntime
 
 <div class="container">
-  <h2>Factorial de un Número</h2>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-        Ingrese el número a calcular:
+    <h2>Factorial de un Número</h2>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Ingrese el número a calcular:
+        </div>
+        <div class="panel-body">
+            <div class="col-md-6">
+                <input id="i_numero" type="text" min="0" style="min-width:100%" maxlength="4" @bind="@txtCaptura" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
+                <span id="s_numero" class="alert-danger"></span>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button class="btn btn-primary" @onclick="ProcesarNumero">Calcular</button>
+        </div>
     </div>
-    <div class="panel-body">
-        <div class="col-md-6">
-           <input id="i_numero" type="text" min="0" style="min-width:100%" maxlength="4" @bind="@txtCaptura" @onblur="ValidarEntradaDato" @onkeyup="ValidarEntradaDato" />
-           <span id="s_numero" class="alert-danger"></span>
-       </div>    
-    </div>
-    <div class="panel-footer">
-        <button class="btn btn-primary" @onclick="ProcesarNumero">Calcular</button>
-    </div>
-  </div>
 </div>
 
 <h3>Resultado:</h3>
 <div class="alert-info" style="max-width:650px; height: auto; word-wrap:break-word;">
     @txtResultado
 </div>
+
+<ModalSpinnerLoader />
 
 @code {
     private string txtCaptura = "", txtResultado = "";
@@ -32,11 +35,17 @@
     {
         var esEntero = await ValidarEntradaDato();
 
-        if(esEntero)
+        if (esEntero)
         {
             txtResultado = "Calculando...";
             var valor = UInt32.Parse(txtCaptura);
-            txtResultado = $"{ObtenerFactorial(valor)}";
+            await _JSRuntime.InvokeVoidAsync("mostrarSpinnerLoader");
+            //
+            var result = await Task.Run(() => ObtenerFactorial(valor));
+            await Task.CompletedTask;
+            txtResultado = $"{result}"; 
+            //
+            await _JSRuntime.InvokeVoidAsync("ocultarSpinnerLoader");
         }
         else
         {
@@ -51,10 +60,10 @@
         return confirmacion;
     }
 
-    public static BigInteger ObtenerFactorial(uint fact)
+    private BigInteger ObtenerFactorial(uint fact)
     {
         if (fact > 2)
             return fact * ObtenerFactorial(fact - 1);
-        return fact == 2? 2:1;
+        return fact == 2 ? 2 : 1;
     }
 }

@@ -20,3 +20,11 @@ function validaEntero(idIntpup, idSpan) {
     }
 
 }
+
+function mostrarSpinnerLoader() {
+    document.getElementById("modalSpinnerLoader").style.display = "block";    
+}
+
+function ocultarSpinnerLoader() {
+    document.getElementById("modalSpinnerLoader").style.display = "none";
+}
